@@ -1,0 +1,1 @@
+protoc --go_out=mic_srv_office/ --micor_out=mic_srv_office/ mic_srv_office/*.proto

@@ -6,6 +6,8 @@ import (
 	log "github.com/micro/go-micro/v2/logger"
 
 	mic_srv_office "mic_srv_office/proto/mic_srv_office"
+
+	_"github.com/micro/go-micro/v2/registry/etcd"
 )
 
 type Mic_srv_office struct{}
@@ -18,7 +20,7 @@ func (e *Mic_srv_office) Call(ctx context.Context, req *mic_srv_office.Request, 
 }
 
 // Stream is a server side stream handler called via client.Stream or the generated client code
-func (e *Mic_srv_office) Stream(ctx context.Context, req *mic_srv_office.StreamingRequest, stream mic_srv_office.Mic_srv_office_StreamStream) error {
+func (e *Mic_srv_office) Stream(ctx context.Context, req *mic_srv_office.StreamingRequest, stream mic_srv_office.MicSrvOffice_StreamStream) error {
 	log.Infof("Received Mic_srv_office.Stream request with count: %d", req.Count)
 
 	for i := 0; i < int(req.Count); i++ {
@@ -34,7 +36,7 @@ func (e *Mic_srv_office) Stream(ctx context.Context, req *mic_srv_office.Streami
 }
 
 // PingPong is a bidirectional stream handler called via client.Stream or the generated client code
-func (e *Mic_srv_office) PingPong(ctx context.Context, stream mic_srv_office.Mic_srv_office_PingPongStream) error {
+func (e *Mic_srv_office) PingPong(ctx context.Context, stream mic_srv_office.MicSrvOffice_PingPongStream) error {
 	for {
 		req, err := stream.Recv()
 		if err != nil {

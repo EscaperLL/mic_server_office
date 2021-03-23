@@ -20,7 +20,7 @@ func main() {
 	service.Init()
 
 	// Register Handler
-	mic_srv_office.RegisterMic_srv_officeHandler(service.Server(), new(handler.Mic_srv_office))
+	mic_srv_office.RegisterMicSrvOfficeHandler(service.Server(), new(handler.Mic_srv_office))
 
 	// Register Struct as Subscriber
 	micro.RegisterSubscriber("go.micro.service.mic_srv_office", service.Server(), new(subscriber.Mic_srv_office))
