@@ -7,6 +7,7 @@ import (
 	"mic_srv_office/subscriber"
 
 	mic_srv_office "mic_srv_office/proto/mic_srv_office"
+	_"github.com/micro/go-micro/v2/registry/etcd"
 )
 
 func main() {
