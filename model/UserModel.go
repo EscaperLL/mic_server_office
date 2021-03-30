@@ -1,11 +1,13 @@
 package model
 
 import (
+	mic_srv_office "mic_srv_office/proto/mic_srv_office"
 	"context"
 	"errors"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/jinzhu/gorm"
 	"mic_srv_office/db"
+	"strconv"
 	"sync"
 	"time"
 )
@@ -36,11 +38,11 @@ type UserModel struct {
 	ID int64 `gorm:"column:id"`
 	Username string `gorm:"column:username"`
 	Pass string `gorm:"column:pass"`
-	Age int `gorm:"column:age"`
-	Gender int `gorm:column:gender`
+	Age int32 `gorm:"column:age"`
+	Gender int32 `gorm:column:gender`
 	phone string `gorm:"column:phone"`
 	Addr string `gorm:"column:addr"`
-	IsActive int `gorm:"column:is_active;default:'0'"`
+	IsActive int32 `gorm:"column:is_active;default:'0'"`
 }
 
 func (UserModel)TableName() string {
@@ -48,7 +50,7 @@ func (UserModel)TableName() string {
 }
 
 
-func (u *UserModel)GetUsers()[]UserModel  {
+func GetUsers()[]UserModel  {
 	db,err := gorm.Open(sqlType,db.Getmysql_offConStr())
 	if err != nil {
 		return nil
@@ -183,5 +185,19 @@ func waitingforher(errs ...<-chan error) error {
 			return e
 		}
 	}
+	return nil
+}
+
+func ModelsConvert2ProtoModels(models *[]UserModel,prtos []*mic_srv_office.User) error {
+	for i :=0 ; i<len(*models);i++{
+		int64_phoneNum,_ := strconv.ParseInt((*models)[i].phone,10,64)
+		prtos=append(prtos,&mic_srv_office.User{Addr: (*models)[i].Addr,PhoneNum: int64_phoneNum,Pass: (*models)[i].Addr,Age: (*models)[i].Age,Gender: (*models)[i].Gender})
+	}
+	return nil
+}
+
+func ModelConver2ProtoModel(user UserModel,protos *mic_srv_office.User)error  {
+	int64_phoneNum,_ := strconv.ParseInt(user.phone,10,64)
+	protos =&mic_srv_office.User{Addr: user.Addr,PhoneNum: int64_phoneNum,Pass: user.Addr,Age: user.Age,Gender: user.Gender}
 	return nil
 }

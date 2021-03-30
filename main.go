@@ -3,6 +3,7 @@ package main
 import (
 	log "github.com/micro/go-micro/v2/logger"
 	"github.com/micro/go-micro/v2"
+	"github.com/micro/go-micro/v2/registry"
 	"mic_srv_office/handler"
 	"mic_srv_office/subscriber"
 
@@ -15,6 +16,7 @@ func main() {
 	service := micro.NewService(
 		micro.Name("go.micro.service.mic_srv_office"),
 		micro.Version("latest"),
+		micro.Registry(registry.Registry(""))
 	)
 
 	// Initialise service
