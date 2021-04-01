@@ -87,14 +87,14 @@ func AddUser(in UserModel)error  {
 	return nil
 }
 
-func AddUsers(users []UserModel)error  {
+func AddUsers(users []*UserModel)error  {
 	db,err := gorm.Open(sqlType,db.Getmysql_offConStr())
 	if err != nil {
 		return nil
 	}
 	defer db.Close()
 	for _,user := range users{
-		err =AddUser(user)
+		err =AddUser(*user)
 		if err != nil {
 			return err
 		}
@@ -114,7 +114,25 @@ func DeleteUser(in <-chan int64)error  {
 	return nil
 }
 
-func DeleteUsersSource(ctx context.Context,users *[]UserModel)(<- chan int64, <-chan error,error)  {
+func DeleteUsers(users []*UserModel)error  {
+	ctx ,concel_fun:= context.WithTimeout(context.Background(),time.Second*5)
+	defer concel_fun()
+	chSouce,chErr,err :=DeleteUsersSource(ctx,users)
+	if err!=nil {
+		return err
+	}
+	ch_deleteErr,err_delete:=DeleteUsersDowork(ctx,chSouce)
+	if err_delete != nil{
+		return err_delete
+	}
+	err = waitingforher(chErr,ch_deleteErr)
+	if err!=nil {
+		return err
+	}
+	return nil
+}
+
+func DeleteUsersSource(ctx context.Context,users []*UserModel)(<- chan int64, <-chan error,error)  {
 	var chUser chan int64
 	var chErr chan error
 
@@ -124,7 +142,7 @@ func DeleteUsersSource(ctx context.Context,users *[]UserModel)(<- chan int64, <-
 	go func() {
 		defer close(chUser)
 		defer close(chErr)
-		for _,user := range *users{
+		for _,user := range users{
 			chUser<-user.ID
 			select {
 			case <-ctx.Done():
@@ -185,6 +203,31 @@ func waitingforher(errs ...<-chan error) error {
 			return e
 		}
 	}
+	return nil
+}
+
+func ProtoModels2Usermodes(prtos []*mic_srv_office.User,models []*UserModel)error  {
+	if len(prtos) != len(models) {
+		return errors.New("slice not equal")
+	}
+	var iIndex int64 =0
+	for _,prto := range prtos{
+		err :=ProtoModel2UserModel(prto,models[iIndex])
+		if err != nil{
+			return err
+		}
+	}
+	return nil
+}
+
+func ProtoModel2UserModel( protoUser * mic_srv_office.User,userModel *UserModel) error {
+	userModel.Gender=protoUser.Gender
+	userModel.Age=protoUser.Age
+	userModel.Addr=protoUser.Addr
+	userModel.Pass=protoUser.Pass
+	userModel.phone=strconv.FormatInt(protoUser.PhoneNum,10)
+	userModel.ID=int64(protoUser.ID)
+	userModel.IsActive=protoUser.IsActive
 	return nil
 }
 
