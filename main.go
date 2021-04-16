@@ -5,7 +5,7 @@ import (
 	log "github.com/micro/go-micro/v2/logger"
 	"mic_srv_office/handler"
 	"mic_srv_office/subscriber"
-
+	_"mic_srv_office/model"
 	_ "github.com/micro/go-micro/v2/registry/etcd"
 	mic_srv_office "mic_srv_office/proto/mic_srv_office"
 )

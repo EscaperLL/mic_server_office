@@ -1,15 +1,16 @@
 package model
 
 import (
-	mic_srv_office "mic_srv_office/proto/mic_srv_office"
 	"context"
 	"errors"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/jinzhu/gorm"
 	"mic_srv_office/db"
+	mic_srv_office "mic_srv_office/proto/mic_srv_office"
 	"strconv"
 	"sync"
 	"time"
+	"fmt"
 )
 
 const (
@@ -40,7 +41,7 @@ type UserModel struct {
 	Pass string `gorm:"column:pass"`
 	Age int32 `gorm:"column:age"`
 	Gender int32 `gorm:column:gender`
-	phone string `gorm:"column:phone"`
+	Phone string `gorm:"column:phone"`
 	Addr string `gorm:"column:addr"`
 	IsActive int32 `gorm:"column:is_active;default:'0'"`
 }
@@ -49,15 +50,29 @@ func (UserModel)TableName() string {
 	return "sys_user"
 }
 
-
+func init()  {
+	db,err := gorm.Open(sqlType,db.Getmysql_offConStr())
+	if err != nil {
+		fmt.Println("get user nil")
+		return
+	}
+	fmt.Println("AutoMigrate")
+	db.AutoMigrate(&UserModel{})
+	fmt.Println(db.Error)
+}
 func GetUsers()[]UserModel  {
 	db,err := gorm.Open(sqlType,db.Getmysql_offConStr())
 	if err != nil {
+		fmt.Println("get user nil")
 		return nil
 	}
 	defer db.Close()
 	users :=[]UserModel{}
-	db.Find(users)
+	db.Find(&users)
+	defer func() {
+		err :=recover()
+		fmt.Println(err)
+	}()
 	return users
 }
 
@@ -225,22 +240,22 @@ func ProtoModel2UserModel( protoUser * mic_srv_office.User,userModel *UserModel)
 	userModel.Age=protoUser.Age
 	userModel.Addr=protoUser.Addr
 	userModel.Pass=protoUser.Pass
-	userModel.phone=strconv.FormatInt(protoUser.PhoneNum,10)
+	userModel.Phone=strconv.FormatInt(protoUser.PhoneNum,10)
 	userModel.ID=int64(protoUser.ID)
 	userModel.IsActive=protoUser.IsActive
 	return nil
 }
 
-func ModelsConvert2ProtoModels(models *[]UserModel,prtos []*mic_srv_office.User) error {
+func ModelsConvert2ProtoModels(models *[]UserModel,prtos *[]*mic_srv_office.User) error {
 	for i :=0 ; i<len(*models);i++{
-		int64_phoneNum,_ := strconv.ParseInt((*models)[i].phone,10,64)
-		prtos=append(prtos,&mic_srv_office.User{Addr: (*models)[i].Addr,PhoneNum: int64_phoneNum,Pass: (*models)[i].Addr,Age: (*models)[i].Age,Gender: (*models)[i].Gender})
+		int64_phoneNum,_ := strconv.ParseInt((*models)[i].Phone,10,64)
+		*prtos=append(*prtos,&mic_srv_office.User{Addr: (*models)[i].Addr,PhoneNum: int64_phoneNum,Pass: (*models)[i].Addr,Age: (*models)[i].Age,Gender: (*models)[i].Gender})
 	}
 	return nil
 }
 
 func ModelConver2ProtoModel(user UserModel,protos *mic_srv_office.User)error  {
-	int64_phoneNum,_ := strconv.ParseInt(user.phone,10,64)
+	int64_phoneNum,_ := strconv.ParseInt(user.Phone,10,64)
 	protos =&mic_srv_office.User{Addr: user.Addr,PhoneNum: int64_phoneNum,Pass: user.Addr,Age: user.Age,Gender: user.Gender}
 	return nil
 }

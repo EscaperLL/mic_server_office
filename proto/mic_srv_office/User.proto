@@ -8,6 +8,16 @@ rpc GetUserByID(UserIDs) returns (User) {}
 rpc SetUser(User) returns (Reply) {}
 rpc SetUsers(Users) returns (Reply) {}
 rpc DelUser(UserIDs) returns (Reply) {}
+rpc GetAllUser(ProtoRequest) returns ( Users) {}
+rpc TestID(TestIDs) returns ( Users) {}
+}
+
+message ProtoRequest{
+int32 ID=1;
+}
+
+message TestIDs{
+repeated int32 ID=1;
 }
 
 message UserIDs{

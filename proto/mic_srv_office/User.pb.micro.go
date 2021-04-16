@@ -47,6 +47,8 @@ type IUserService interface {
 	SetUser(ctx context.Context, in *User, opts ...client.CallOption) (*Reply, error)
 	SetUsers(ctx context.Context, in *Users, opts ...client.CallOption) (*Reply, error)
 	DelUser(ctx context.Context, in *UserIDs, opts ...client.CallOption) (*Reply, error)
+	GetAllUser(ctx context.Context, in *ProtoRequest, opts ...client.CallOption) (*Users, error)
+	TestID(ctx context.Context, in *TestIDs, opts ...client.CallOption) (*Users, error)
 }
 
 type iUserService struct {
@@ -111,6 +113,26 @@ func (c *iUserService) DelUser(ctx context.Context, in *UserIDs, opts ...client.
 	return out, nil
 }
 
+func (c *iUserService) GetAllUser(ctx context.Context, in *ProtoRequest, opts ...client.CallOption) (*Users, error) {
+	req := c.c.NewRequest(c.name, "IUserService.GetAllUser", in)
+	out := new(Users)
+	err := c.c.Call(ctx, req, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *iUserService) TestID(ctx context.Context, in *TestIDs, opts ...client.CallOption) (*Users, error) {
+	req := c.c.NewRequest(c.name, "IUserService.TestID", in)
+	out := new(Users)
+	err := c.c.Call(ctx, req, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // Server API for IUserService service
 
 type IUserServiceHandler interface {
@@ -119,6 +141,8 @@ type IUserServiceHandler interface {
 	SetUser(context.Context, *User, *Reply) error
 	SetUsers(context.Context, *Users, *Reply) error
 	DelUser(context.Context, *UserIDs, *Reply) error
+	GetAllUser(context.Context, *ProtoRequest, *Users) error
+	TestID(context.Context, *TestIDs, *Users) error
 }
 
 func RegisterIUserServiceHandler(s server.Server, hdlr IUserServiceHandler, opts ...server.HandlerOption) error {
@@ -128,6 +152,8 @@ func RegisterIUserServiceHandler(s server.Server, hdlr IUserServiceHandler, opts
 		SetUser(ctx context.Context, in *User, out *Reply) error
 		SetUsers(ctx context.Context, in *Users, out *Reply) error
 		DelUser(ctx context.Context, in *UserIDs, out *Reply) error
+		GetAllUser(ctx context.Context, in *ProtoRequest, out *Users) error
+		TestID(ctx context.Context, in *TestIDs, out *Users) error
 	}
 	type IUserService struct {
 		iUserService
@@ -158,4 +184,12 @@ func (h *iUserServiceHandler) SetUsers(ctx context.Context, in *Users, out *Repl
 
 func (h *iUserServiceHandler) DelUser(ctx context.Context, in *UserIDs, out *Reply) error {
 	return h.IUserServiceHandler.DelUser(ctx, in, out)
+}
+
+func (h *iUserServiceHandler) GetAllUser(ctx context.Context, in *ProtoRequest, out *Users) error {
+	return h.IUserServiceHandler.GetAllUser(ctx, in, out)
+}
+
+func (h *iUserServiceHandler) TestID(ctx context.Context, in *TestIDs, out *Users) error {
+	return h.IUserServiceHandler.TestID(ctx, in, out)
 }

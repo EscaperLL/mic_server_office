@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"fmt"
 	"mic_srv_office/model"
 	mic_srv_office "mic_srv_office/proto/mic_srv_office"
 
@@ -14,8 +15,11 @@ type Mic_src_user struct {
 
 func (u *Mic_src_user)GetUsers(ctx context.Context, in *mic_srv_office.Users, reply *mic_srv_office.Reply) error  {
 	usermodels :=model.GetUsers()
-	model.ModelsConvert2ProtoModels(&usermodels,in.GetUsersInfo())
-	reply=&mic_srv_office.Reply{Code: 0,Msg: ""}
+	fmt.Println("Mic_src_user",usermodels)
+	model.ModelsConvert2ProtoModels(&usermodels,&in.UsersInfo)
+	fmt.Println("[out ]Mic_src_user info ",in.GetUsersInfo())
+	reply.Code=123213
+	reply.Msg="asdkasdl"
 	return nil
 }
 
@@ -62,4 +66,17 @@ func (u *Mic_src_user)DelUser(ctx context.Context,in *mic_srv_office.UserIDs,re 
 	model.ProtoModels2Usermodes(userprotos,usermodels)
 	err := model.DeleteUsers(usermodels)
 	return err
+}
+
+func (u *Mic_src_user)GetAllUser(ctx context.Context,in *mic_srv_office.ProtoRequest,out *mic_srv_office.Users) error{
+	usermodels :=model.GetUsers()
+	fmt.Println("Mic_src_user",usermodels)
+	model.ModelsConvert2ProtoModels(&usermodels,&out.UsersInfo)
+	fmt.Println("[out ]Mic_src_user info ",out.GetUsersInfo())
+	return nil
+}
+
+func (u *Mic_src_user)TestID(ctx context.Context,in *mic_srv_office.TestIDs,out *mic_srv_office.Users) error{
+	in.ID=append(in.ID,66666)
+	return nil
 }
