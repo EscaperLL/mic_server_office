@@ -1,0 +1,63 @@
+version:  '3.3'
+
+services:
+  # db:
+  #   image: mysql:5.7
+  #   volumes:
+  #   - db_data:/var/lib/mysql
+  #   environment:
+  #     MYSQL_ROOT_PASSWORD: root
+  #     MYSQL_DATABASE: go-micro
+  #     MYSQL_USER: micro
+  #     MYSQL_PASSWORD: micro
+  #   networks:
+  #     - mic_srv
+  #   ports:
+  #   - 3306:3306
+
+  # etcd:
+  #   image: bitnami/etcd:latest
+  #   environment:
+  #     ALLOW_NONE_AUTHENTICATION: "yes"
+  #     ETCD_ADVERTISE_CLIENT_URLS: "http://etcd:2379"
+  #   ports:
+  #     - "2379:2379"
+  #     - "2380:2380"
+  #   networks:
+  #     - mic_srv
+
+
+  micro-api:
+    image: micro-api
+    build: ./micro_tool/
+    networks:
+      - mic_srv
+    stdin_open: true
+    tty: true
+
+  # mic-server:
+  #   depends_on:
+  #     - db
+  #   build: .
+  #   networks:
+  #     - mic_srv
+  #   environment:
+  #     GO_MICRO_DB_HOST: db:3306
+  #     GO_MICRO_DB_USER: micro
+  #     GO_MICRO_DB_PASSWORD: micro
+  #     GO_MICRO_DB_NAME: go-micro
+
+  # api-server:
+  #   networks:
+  #     - mic_srv
+  #   depends_on:
+  #     - db
+  #     - mic-server
+  #   build: ./api/
+    
+networks: 
+  mic_srv:
+    external: false
+
+volumes:
+  db_data: {}

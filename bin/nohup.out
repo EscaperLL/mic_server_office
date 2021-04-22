@@ -1,0 +1,8 @@
+AutoMigrate
+<nil>
+2021-04-22 07:19:00  file=v2@v2.9.1/service.go:200 level=info Starting [service] go.micro.srv.user
+2021-04-22 07:19:00  file=grpc/grpc.go:864 level=info Server [grpc] Listening on [::]:43387
+2021-04-22 07:19:00  file=grpc/grpc.go:881 level=info Broker [http] Connected to 127.0.0.1:41421
+2021-04-22 07:19:00  file=grpc/grpc.go:697 level=info Registry [mdns] Registering node: go.micro.srv.user-c262a2a8-6fc8-4619-97cd-14c2b94a3e1c
+2021-04-22 07:19:00  file=grpc/grpc.go:730 level=info Subscribing to topic: go.micro.service.mic_srv_office
+2021-04-22 07:19:00  file=grpc/grpc.go:730 level=info Subscribing to topic: go.micro.service.mic_srv_office_user
